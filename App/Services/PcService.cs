@@ -61,7 +61,7 @@ public class PcService(DatabaseContext ctx) : IPcService
             Name = request.Name,
             Weight = request.Weight,
             Warranty = request.Warranty,
-            CreatedAt = request.CreatedAt,
+            CreatedAt = DateTime.UtcNow,
             Stock = request.Stock
         };
 
@@ -69,5 +69,22 @@ public class PcService(DatabaseContext ctx) : IPcService
         await ctx.SaveChangesAsync(cancellationToken);
 
         return new PcResponse(pc.Id, pc.Name, pc.Weight, pc.Warranty, pc.CreatedAt, pc.Stock);
+    }
+
+    public async Task UpdateAsync(int id, UpdatePcRequest request, CancellationToken cancellationToken)
+    {
+        var affectedRows = await ctx.Pcs.Where(pc => pc.Id == id)
+            .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(pc => pc.Name, request.Name)
+                    .SetProperty(pc => pc.Weight, request.Weight)
+                    .SetProperty(pc => pc.Warranty, request.Warranty)
+                    .SetProperty(pc => pc.Stock, request.Stock),
+                cancellationToken
+            );
+
+        if (affectedRows == 0)
+        {
+            throw new PcNotFoundException($"PC with id {id} not found.");
+        }
     }
 }

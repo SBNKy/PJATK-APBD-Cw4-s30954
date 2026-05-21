@@ -36,9 +36,17 @@ public class PcController(IPcService pcService) : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update([FromRoute] int id)
+    public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdatePcRequest request, CancellationToken cancellationToken)
     {
-        return Ok();
+        try
+        {
+            await pcService.UpdateAsync(id, request, cancellationToken);
+            return NoContent();
+        }
+        catch (PcNotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
     }
 
     [HttpDelete("{id:int}")]
