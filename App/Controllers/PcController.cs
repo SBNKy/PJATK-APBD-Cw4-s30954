@@ -50,9 +50,17 @@ public class PcController(IPcService pcService) : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
-    public async Task<IActionResult> Delete([FromRoute] int id)
+    public async Task<IActionResult> Delete([FromRoute] int id, CancellationToken cancellationToken)
     {
-        return Ok();
+        try
+        {
+            await pcService.DeleteAsync(id, cancellationToken);
+            return NoContent();
+        }
+        catch (PcNotFoundException e)
+        {
+            return NotFound(e.Message); 
+        }
     }
     
 }

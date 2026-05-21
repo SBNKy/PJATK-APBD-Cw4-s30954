@@ -87,4 +87,16 @@ public class PcService(DatabaseContext ctx) : IPcService
             throw new PcNotFoundException($"PC with id {id} not found.");
         }
     }
+
+    public async Task DeleteAsync(int id, CancellationToken cancellationToken)
+    {
+        var affectedRows = await ctx.Pcs
+            .Where(pc => pc.Id == id)
+            .ExecuteDeleteAsync(cancellationToken);
+
+        if (affectedRows == 0)
+        {
+            throw new PcNotFoundException($"PC with id {id} not found.");
+        }
+    }
 }
