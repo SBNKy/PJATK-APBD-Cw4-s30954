@@ -1,15 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using App.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace App.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class PcController : ControllerBase
+public class PcController(IPcService pcService) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
-        return Ok();
+        return Ok(await pcService.GetAllAsync(cancellationToken));
     }
 
     [HttpGet("{id:int}")]
