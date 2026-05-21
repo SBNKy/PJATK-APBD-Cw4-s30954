@@ -41,7 +41,7 @@ public class PcController(IPcService pcService) : ControllerBase
         try
         {
             await pcService.UpdateAsync(id, request, cancellationToken);
-            return NoContent();
+            return Ok();
         }
         catch (PcNotFoundException e)
         {
