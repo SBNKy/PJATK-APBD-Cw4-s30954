@@ -1,6 +1,7 @@
 ﻿using App.DTOs;
 using App.Exceptions;
 using App.Infrastructure;
+using App.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace App.Services;
@@ -51,5 +52,22 @@ public class PcService(DatabaseContext ctx) : IPcService
                        )).ToList()
                    )).FirstOrDefaultAsync(cancellationToken)
                ?? throw new PcNotFoundException($"PC with id {id} not found");
+    }
+
+    public async Task<PcResponse> AddAsync(CreatePcRequest request, CancellationToken cancellationToken)
+    {
+        var pc = new Pc
+        {
+            Name = request.Name,
+            Weight = request.Weight,
+            Warranty = request.Warranty,
+            CreatedAt = request.CreatedAt,
+            Stock = request.Stock
+        };
+
+        ctx.Add(pc);
+        await ctx.SaveChangesAsync(cancellationToken);
+
+        return new PcResponse(pc.Id, pc.Name, pc.Weight, pc.Warranty, pc.CreatedAt, pc.Stock);
     }
 }

@@ -1,4 +1,5 @@
-﻿using App.Exceptions;
+﻿using App.DTOs;
+using App.Exceptions;
 using App.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,9 +29,10 @@ public class PcController(IPcService pcService) : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Add()
+    public async Task<IActionResult> Add([FromBody] CreatePcRequest request, CancellationToken cancellationToken)
     {
-        return Ok();
+        var pc = await pcService.AddAsync(request, cancellationToken);
+        return CreatedAtAction(nameof(GetById), new { id = pc.Id}, pc);
     }
 
     [HttpPut("{id:int}")]
