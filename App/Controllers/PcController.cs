@@ -1,4 +1,5 @@
-﻿using App.Services;
+﻿using App.Exceptions;
+using App.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace App.Controllers;
@@ -14,9 +15,16 @@ public class PcController(IPcService pcService) : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    public async Task<IActionResult> GetById([FromRoute] int id)
+    public async Task<IActionResult> GetById([FromRoute] int id, CancellationToken cancellationToken)
     {
-        return Ok();
+        try
+        {
+            return Ok(await pcService.GetByIdAsync(id, cancellationToken));
+        }
+        catch (PcNotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
     }
 
     [HttpPost]
